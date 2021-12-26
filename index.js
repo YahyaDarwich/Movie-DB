@@ -57,6 +57,50 @@ app.get("/search", function (req, res, next) {
   }
 });
 
+const movies = [
+  { title: "Jaws", year: 1975, rating: 8 },
+  { title: "Avatar", year: 2009, rating: 7.8 },
+  { title: "Brazil", year: 1985, rating: 8 },
+  { title: "الإرهاب والكباب‎", year: 1992, rating: 6.2 },
+];
+
+app.get("/movies/create", function (req, res, next) {
+  next();
+});
+
+app.get("/movies/read", function (req, res, next) {
+  res.status(200);
+  // res.json({cart: req.cart.toJSON(movies)})
+  res.send(
+    movies.map( (e) =>
+     `${e.title}
+      ${e.year}
+      ${e.rating}
+      `).join("")
+  );
+  next();
+});
+
+app.get("/movies/update", function (req, res, next) {
+  next();
+});
+
+app.get("/movies/delete", function (req, res, next) {
+  next();
+});
+
+app.get("/movies/add", function (req, res, next) {
+  next();
+});
+
+app.get("/movies/get", function (req, res, next) {
+  next();
+});
+
+app.get("/movies/edit", function (req, res, next) {
+  next();
+});
+
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
