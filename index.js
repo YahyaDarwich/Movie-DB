@@ -11,6 +11,8 @@ app.get("/", (req, res) => {
   next();
 });
 
+
+// Step 3
 app.get("/test", (req, res) => {
   res.status(200);
   res.send("ok");
@@ -29,6 +31,8 @@ app.get("/time", (req, res) => {
   next();
 });
 
+
+// Step 4
 app.get("/hello/:id", function (req, res, next) {
   console.log("id: " + req.params.id);
   if (+req.params.id) {
@@ -57,6 +61,8 @@ app.get("/search", function (req, res, next) {
   }
 });
 
+
+// Step 5
 const movies = [
   { title: "Jaws", year: 1975, rating: 8 },
   { title: "Avatar", year: 2009, rating: 7.8 },
@@ -105,6 +111,8 @@ app.get("/movies/edit", function (req, res, next) {
   next();
 });
 
+
+// Step 6
 app.get("/movies/read/by-date", function (req, res, next) {
   movies.sort(CompareByName);
   console.log(movies);
@@ -178,6 +186,27 @@ function CompareByName(a, b) {
   }
   else return 0;
 };
+
+
+// Step 7
+app.get("/movies/read/id/:id", function (req, res, next) {
+  if(+(req.params.id) < movies.length){
+    console.log(movies);
+    res.status(200).send({status:200, data : movies[+(req.params.id)]});
+
+    // OR this message
+    //res.status(200).send(movies[+(req.params.id)]);
+    next();
+  }
+  else{
+    res.status(404).send({status:404, error:true, message:'The movie \''+req.params.id+'\' does not exist, the final ID is ' + (movies.length-1)});
+
+    // OR this message
+    //res.status(404).send("The movie \'"+req.params.id+"\' does not exist, the final ID is " + (movies.length-1));
+    next();
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
