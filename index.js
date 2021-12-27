@@ -11,7 +11,6 @@ app.get("/", (req, res) => {
   next();
 });
 
-
 // Step 3
 app.get("/test", (req, res) => {
   res.status(200);
@@ -30,7 +29,6 @@ app.get("/time", (req, res) => {
   // res.status(200).send(time);
   next();
 });
-
 
 // Step 4
 app.get("/hello/:id", function (req, res, next) {
@@ -61,7 +59,6 @@ app.get("/search", function (req, res, next) {
   }
 });
 
-
 // Step 5
 const movies = [
   { title: "Jaws", year: 1975, rating: 8 },
@@ -75,9 +72,10 @@ app.get("/movies/create", function (req, res, next) {
 });
 
 app.get("/movies/read", function (req, res, next) {
-  res.status(200);
-  // res.json({cart: req.cart.toJSON(movies)})
-  res.send(
+  res.status(200).send({status:200, data:movies });
+
+  // OR send the list with String format
+  res.status(200).send(
     movies
       .map(
         (e) =>
@@ -99,9 +97,9 @@ app.get("/movies/delete", function (req, res, next) {
   next();
 });
 
-app.get("/movies/add", function (req, res, next) {
-  next();
-});
+// app.get("/movies/add", function (req, res, next) {
+//   next();
+// });
 
 app.get("/movies/get", function (req, res, next) {
   next();
@@ -110,7 +108,6 @@ app.get("/movies/get", function (req, res, next) {
 app.get("/movies/edit", function (req, res, next) {
   next();
 });
-
 
 // Step 6
 app.get("/movies/read/by-date", function (req, res, next) {
@@ -138,7 +135,7 @@ app.get("/movies/read/by-rating", function (req, res, next) {
   movies.sort(CompareByName);
   console.log(movies);
   console.log("------------------------------");
-  movies.sort((firstItem, secondItem) => secondItem.rating - firstItem.rating );
+  movies.sort((firstItem, secondItem) => secondItem.rating - firstItem.rating);
   console.log(movies);
   res.status(200);
   res.send(movies);
@@ -151,7 +148,7 @@ app.get("/movies/read/by-rating", function (req, res, next) {
   //     ${e.rating}
   //     `).join(" ")
   // );
-  
+
   next();
 });
 
@@ -171,35 +168,41 @@ app.get("/movies/read/by-title", function (req, res, next) {
   //     ${e.rating}
   //     `).join(" ")
   // );
-  
+
   next();
 });
 
 function CompareByName(a, b) {
-  var nameA = a.title.toUpperCase(); 
+  var nameA = a.title.toUpperCase();
   var nameB = b.title.toUpperCase();
   if (nameA < nameB) {
     return -1;
-  }
-  else if (nameA > nameB) {
+  } else if (nameA > nameB) {
     return 1;
-  }
-  else return 0;
-};
-
+  } else return 0;
+}
 
 // Step 7
 app.get("/movies/read/id/:id", function (req, res, next) {
-  if(+(req.params.id) < movies.length){
+  if (+req.params.id < movies.length) {
     console.log(movies);
-    res.status(200).send({status:200, data : movies[+(req.params.id)]});
+    res.status(200).send({ status: 200, data: movies[+req.params.id] });
 
     // OR this message
     //res.status(200).send(movies[+(req.params.id)]);
     next();
-  }
-  else{
-    res.status(404).send({status:404, error:true, message:'The movie \''+req.params.id+'\' does not exist, the final ID is ' + (movies.length-1)});
+  } else {
+    res
+      .status(404)
+      .send({
+        status: 404,
+        error: true,
+        message:
+          "The movie '" +
+          req.params.id +
+          "' does not exist, the final ID is " +
+          (movies.length - 1),
+      });
 
     // OR this message
     //res.status(404).send("The movie \'"+req.params.id+"\' does not exist, the final ID is " + (movies.length-1));
@@ -207,6 +210,57 @@ app.get("/movies/read/id/:id", function (req, res, next) {
   }
 });
 
+// Step 8
+app.get("/movies/add", function (req, res, next) {
+  let newTitle = req.param("title");
+  let newYear = req.param("year");
+  let newRating = req.param("rating");
+
+  console.log(
+    "Title= " + newTitle + " Year= " + newYear + " Rating= " + newRating
+  );
+  if (
+    isMissing(newTitle) == false &&
+    isMissing(newYear) == false &&
+    +newYear != NaN &&
+    newYear.length == 4
+  ) {
+    console.log(movies);
+    console.log("-------------------------------");
+    if (isMissing(newRating) == true) {
+      newYear = +newYear; // change year to integer
+      movies.push({ title: newTitle, year: newYear, rating: 4 });
+      console.log(movies);
+      res.status(200).send({status:200, data:movies });
+      next();
+    } else {
+      newYear = +newYear; // change year to integer
+      newRating = +newRating; // change rating to integer
+      movies.push({ title: newTitle, year: newYear, rating: newRating });
+      console.log(movies);
+      res.status(200).send({status:200, data:movies });
+      next();
+    }
+  } else {
+    res
+      .status(403)
+      .send({
+        status: 403,
+        error: true,
+        message:
+          "you cannot create a movie without providing a title and a year",
+      });
+
+    // OR this message
+    //res.status(403).send("you cannot create a movie without providing a title and a year");
+    next();
+  }
+});
+
+function isMissing(str) {
+  if (str == null || str == undefined || str.length == 0) return true;
+  else return false;
+}
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
