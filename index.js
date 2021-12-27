@@ -72,11 +72,15 @@ app.get("/movies/read", function (req, res, next) {
   res.status(200);
   // res.json({cart: req.cart.toJSON(movies)})
   res.send(
-    movies.map( (e) =>
-     `${e.title}
+    movies
+      .map(
+        (e) =>
+          `${e.title}
       ${e.year}
       ${e.rating}
-      `).join("")
+      `
+      )
+      .join("")
   );
   next();
 });
@@ -100,6 +104,80 @@ app.get("/movies/get", function (req, res, next) {
 app.get("/movies/edit", function (req, res, next) {
   next();
 });
+
+app.get("/movies/read/by-date", function (req, res, next) {
+  movies.sort(CompareByName);
+  console.log(movies);
+  console.log("------------------------------");
+  movies.sort((firstItem, secondItem) => firstItem.year - secondItem.year);
+  console.log(movies);
+  res.status(200);
+  res.send(movies);
+
+  // OR send the list with String format
+  // res.send(
+  //   movies.map( (e) =>
+  //    `${e.title}
+  //     ${e.year}
+  //     ${e.rating}
+  //     `).join(" ")
+  // );
+
+  next();
+});
+
+app.get("/movies/read/by-rating", function (req, res, next) {
+  movies.sort(CompareByName);
+  console.log(movies);
+  console.log("------------------------------");
+  movies.sort((firstItem, secondItem) => secondItem.rating - firstItem.rating );
+  console.log(movies);
+  res.status(200);
+  res.send(movies);
+
+  // OR send the list with String format
+  // res.send(
+  //   movies.map( (e) =>
+  //    `${e.title}
+  //     ${e.year}
+  //     ${e.rating}
+  //     `).join(" ")
+  // );
+  
+  next();
+});
+
+app.get("/movies/read/by-title", function (req, res, next) {
+  console.log(movies);
+  console.log("------------------------------");
+  movies.sort(CompareByName);
+  console.log(movies);
+  res.status(200);
+  res.send(movies);
+
+  // OR send the list with String format
+  // res.send(
+  //   movies.map( (e) =>
+  //    `${e.title}
+  //     ${e.year}
+  //     ${e.rating}
+  //     `).join(" ")
+  // );
+  
+  next();
+});
+
+function CompareByName(a, b) {
+  var nameA = a.title.toUpperCase(); 
+  var nameB = b.title.toUpperCase();
+  if (nameA < nameB) {
+    return -1;
+  }
+  else if (nameA > nameB) {
+    return 1;
+  }
+  else return 0;
+};
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
