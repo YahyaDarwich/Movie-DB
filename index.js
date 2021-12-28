@@ -257,7 +257,6 @@ function isMissing(str) {
   else return false;
 }
 
-
 // Step 9
 app.get("/movies/delete/:id", function (req, res, next) {
   console.log(req.params.id);
@@ -266,7 +265,9 @@ app.get("/movies/delete/:id", function (req, res, next) {
       status: 404,
       error: true,
       message:
-        "The movie '" + req.params.id + "' does not exist, you must enter an  ID >= 0 ",
+        "The movie '" +
+        req.params.id +
+        "' does not exist, you must enter an  ID >= 0 ",
     });
     next();
   } else {
@@ -293,16 +294,105 @@ app.get("/movies/delete/:id", function (req, res, next) {
       res.status(404).send({
         status: 404,
         error: true,
-        message:
-          "The movie '" +
-          id +
-          "' does not exist "
+        message: "The movie '" + id + "' does not exist ",
       });
 
       // OR this message
       //res.status(404).send("The movie \'"+id+"\' does not exist ");
       next();
     }
+  }
+});
+
+//Step 10
+app.get("/movies/update/:id", function (req, res, next) {
+  let id = req.params.id;
+  let newTitle = req.param("title");
+  let newYear = req.param("year");
+  let newRating = req.param("rating");
+
+  console.log(
+    "ID= " +
+      id +
+      " Title= " +
+      newTitle +
+      " Year= " +
+      newYear +
+      " Rating= " +
+      newRating
+  );
+  if (
+    isMissing(newTitle) == false &&
+    isMissing(newYear) == false &&
+    +newYear != NaN &&
+    newYear.length == 4 &&
+    isMissing(newRating) == false
+  ) {
+    console.log(movies);
+    console.log("-------------------------------");
+
+    newYear = +newYear; // change year to integer
+    newRating = +newRating; // change rating to integer
+    movies[id].title = newTitle;
+    movies[id].year = newYear;
+    movies[id].rating = newRating;
+    console.log(movies);
+    res.status(200).send({ status: 200, data: movies });
+    next();
+  } else if (
+    isMissing(newYear) == false &&
+    +newYear != NaN &&
+    newYear.length == 4
+  ) {
+    console.log(movies);
+    console.log("-------------------------------");
+    newTitle = newTitle || movies[id].title;
+    newYear = +newYear; // change year to integer
+    newRating = +newRating || movies[id].rating; // change rating to integer
+    console.log(
+      "ID= " +
+        id +
+        " Title= " +
+        newTitle +
+        " Year= " +
+        newYear +
+        " Rating= " +
+        newRating
+    );
+    movies[id].title = newTitle;
+    movies[id].year = newYear;
+    movies[id].rating = newRating;
+    console.log(movies);
+    res.status(200).send({ status: 200, data: movies });
+    next();
+
+    // OR this message
+    //res.status(403).send("you cannot create a movie without providing a title and a year");
+  } else if (isMissing(newYear) == true) {
+    console.log(movies);
+    console.log("-------------------------------");
+    newTitle = newTitle || movies[id].title;
+    newYear = movies[id].year; // change year to integer
+    newRating = +newRating || movies[id].rating; // change rating to integer
+    console.log(
+      "ID= " +
+        id +
+        " Title= " +
+        newTitle +
+        " Year= " +
+        newYear +
+        " Rating= " +
+        newRating
+    );
+    movies[id].title = newTitle;
+    movies[id].year = newYear;
+    movies[id].rating = newRating;
+    console.log(movies);
+    res.status(200).send({ status: 200, data: movies });
+    next();
+  } else {
+    res.status(404).send({ status: 404, message: "enter a valid year" });
+    next();
   }
 });
 
