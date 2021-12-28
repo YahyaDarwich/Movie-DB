@@ -72,7 +72,7 @@ app.get("/movies/create", function (req, res, next) {
 });
 
 app.get("/movies/read", function (req, res, next) {
-  res.status(200).send({status:200, data:movies });
+  res.status(200).send({ status: 200, data: movies });
 
   // OR send the list with String format
   res.status(200).send(
@@ -192,17 +192,15 @@ app.get("/movies/read/id/:id", function (req, res, next) {
     //res.status(200).send(movies[+(req.params.id)]);
     next();
   } else {
-    res
-      .status(404)
-      .send({
-        status: 404,
-        error: true,
-        message:
-          "The movie '" +
-          req.params.id +
-          "' does not exist, the final ID is " +
-          (movies.length - 1),
-      });
+    res.status(404).send({
+      status: 404,
+      error: true,
+      message:
+        "The movie '" +
+        req.params.id +
+        "' does not exist, the final ID is " +
+        (movies.length - 1),
+    });
 
     // OR this message
     //res.status(404).send("The movie \'"+req.params.id+"\' does not exist, the final ID is " + (movies.length-1));
@@ -231,25 +229,22 @@ app.get("/movies/add", function (req, res, next) {
       newYear = +newYear; // change year to integer
       movies.push({ title: newTitle, year: newYear, rating: 4 });
       console.log(movies);
-      res.status(200).send({status:200, data:movies });
+      res.status(200).send({ status: 200, data: movies });
       next();
     } else {
       newYear = +newYear; // change year to integer
       newRating = +newRating; // change rating to integer
       movies.push({ title: newTitle, year: newYear, rating: newRating });
       console.log(movies);
-      res.status(200).send({status:200, data:movies });
+      res.status(200).send({ status: 200, data: movies });
       next();
     }
   } else {
-    res
-      .status(403)
-      .send({
-        status: 403,
-        error: true,
-        message:
-          "you cannot create a movie without providing a title and a year",
-      });
+    res.status(403).send({
+      status: 403,
+      error: true,
+      message: "you cannot create a movie without providing a title and a year",
+    });
 
     // OR this message
     //res.status(403).send("you cannot create a movie without providing a title and a year");
@@ -261,6 +256,55 @@ function isMissing(str) {
   if (str == null || str == undefined || str.length == 0) return true;
   else return false;
 }
+
+
+// Step 9
+app.get("/movies/delete/:id", function (req, res, next) {
+  console.log(req.params.id);
+  if (req.params.id.startsWith("-")) {
+    res.status(404).send({
+      status: 404,
+      error: true,
+      message:
+        "The movie '" + req.params.id + "' does not exist, you must enter an  ID >= 0 ",
+    });
+    next();
+  } else {
+    let id = +req.params.id;
+    if (id < movies.length) {
+      console.log("ID= " + id);
+      movies.splice(id, 1);
+      res.status(200).send({ status: 200, data: movies });
+
+      // OR this message
+      //res.status(200).send(movies);
+      next();
+    } else if (id == 0 && movies.length == 0) {
+      res.status(404).send({
+        status: 404,
+        error: true,
+        message:
+          "The movie '" +
+          id +
+          "' does not exist, because the list of movies is empty ",
+      });
+      next();
+    } else {
+      res.status(404).send({
+        status: 404,
+        error: true,
+        message:
+          "The movie '" +
+          id +
+          "' does not exist "
+      });
+
+      // OR this message
+      //res.status(404).send("The movie \'"+id+"\' does not exist ");
+      next();
+    }
+  }
+});
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
