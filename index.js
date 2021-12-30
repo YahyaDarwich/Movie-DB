@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 const port = 3000;
+const MongoClient = require("mongodb").MongoClient;
+const bodyParser = require("body-parser");
 
 var today = new Date();
 var time =
@@ -10,6 +12,8 @@ app.get("/", (req, res) => {
   res.send("ok");
   next();
 });
+
+
 
 // Step 3
 app.get("/test", (req, res) => {
@@ -89,13 +93,13 @@ app.get("/movies/read", function (req, res, next) {
   next();
 });
 
-app.get("/movies/update", function (req, res, next) {
-  next();
-});
+// app.get("/movies/update", function (req, res, next) {
+//   next();
+// });
 
-app.get("/movies/delete", function (req, res, next) {
-  next();
-});
+// app.get("/movies/delete", function (req, res, next) {
+//   next();
+// });
 
 // app.get("/movies/add", function (req, res, next) {
 //   next();
@@ -209,7 +213,7 @@ app.get("/movies/read/id/:id", function (req, res, next) {
 });
 
 // Step 8
-app.get("/movies/add", function (req, res, next) {
+app.post("/movies/add", function (req, res, next) {
   let newTitle = req.param("title");
   let newYear = req.param("year");
   let newRating = req.param("rating");
@@ -258,7 +262,7 @@ function isMissing(str) {
 }
 
 // Step 9
-app.get("/movies/delete/:id", function (req, res, next) {
+app.delete("/movies/delete/:id", function (req, res, next) {
   console.log(req.params.id);
   if (req.params.id.startsWith("-")) {
     res.status(404).send({
@@ -305,7 +309,7 @@ app.get("/movies/delete/:id", function (req, res, next) {
 });
 
 //Step 10
-app.get("/movies/update/:id", function (req, res, next) {
+app.put("/movies/update/:id", function (req, res, next) {
   let id = req.params.id;
   let newTitle = req.param("title");
   let newYear = req.param("year");
