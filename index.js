@@ -3,6 +3,16 @@ const app = express();
 const port = 3000;
 const MongoClient = require("mongodb").MongoClient;
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+
+const url = `mongodb+srv://yahya_codi:yahcodi@cluster0.skewv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+
+mongoose.connect(url);
+
+const movieSchema = new mongoose.Schema({
+  moviesItem: [{ title: String, year: Number, rating: Number }],
+});
+const Movies = mongoose.model("Movies", movieSchema);
 
 var today = new Date();
 var time =
@@ -12,8 +22,6 @@ app.get("/", (req, res) => {
   res.send("ok");
   next();
 });
-
-
 
 // Step 3
 app.get("/test", (req, res) => {
@@ -64,32 +72,48 @@ app.get("/search", function (req, res, next) {
 });
 
 // Step 5
-const movies = [
-  { title: "Jaws", year: 1975, rating: 8 },
-  { title: "Avatar", year: 2009, rating: 7.8 },
-  { title: "Brazil", year: 1985, rating: 8 },
-  { title: "الإرهاب والكباب‎", year: 1992, rating: 6.2 },
-];
+// const movies = [
+//   { title: "Jaws", year: 1975, rating: 8 },
+//   { title: "Avatar", year: 2009, rating: 7.8 },
+//   { title: "Brazil", year: 1985, rating: 8 },
+//   { title: "الإرهاب والكباب‎", year: 1992, rating: 6.2 },
+// ];
+
+const movies = new Movies({
+  moviesItem: [
+    { title: "Jaws", year: 1975, rating: 8 },
+    { title: "Avatar", year: 2009, rating: 7.8 },
+    { title: "Brazil", year: 1985, rating: 8 },
+    { title: "الإرهاب والكباب‎", year: 1992, rating: 6.2 },
+  ],
+});
+
+// Movies.find({}).then(result => {
+//   result.forEach(note => {
+//     console.log(note)
+//   })
+//   mongoose.connection.close()
+// })
 
 app.get("/movies/create", function (req, res, next) {
   next();
 });
 
 app.get("/movies/read", function (req, res, next) {
-  res.status(200).send({ status: 200, data: movies });
+  res.status(200).send({ status: 200, data: movies.moviesItem });
 
   // OR send the list with String format
-  res.status(200).send(
-    movies
-      .map(
-        (e) =>
-          `${e.title}
-      ${e.year}
-      ${e.rating}
-      `
-      )
-      .join("")
-  );
+  // res.status(200).send(
+  //   movies
+  //     .map(
+  //       (e) =>
+  //         `${e.title}
+  //     ${e.year}
+  //     ${e.rating}
+  //     `
+  //     )
+  //     .join("")
+  // );
   next();
 });
 
@@ -115,17 +139,19 @@ app.get("/movies/edit", function (req, res, next) {
 
 // Step 6
 app.get("/movies/read/by-date", function (req, res, next) {
-  movies.sort(CompareByName);
-  console.log(movies);
+  movies.moviesItem.sort(CompareByName);
+  console.log(movies.moviesItem);
   console.log("------------------------------");
-  movies.sort((firstItem, secondItem) => firstItem.year - secondItem.year);
-  console.log(movies);
+  movies.moviesItem.sort(
+    (firstItem, secondItem) => firstItem.year - secondItem.year
+  );
+  console.log(movies.moviesItem);
   res.status(200);
-  res.send(movies);
+  res.send(movies.moviesItem);
 
   // OR send the list with String format
   // res.send(
-  //   movies.map( (e) =>
+  //   movies.moviesItem.map( (e) =>
   //    `${e.title}
   //     ${e.year}
   //     ${e.rating}
@@ -136,17 +162,19 @@ app.get("/movies/read/by-date", function (req, res, next) {
 });
 
 app.get("/movies/read/by-rating", function (req, res, next) {
-  movies.sort(CompareByName);
-  console.log(movies);
+  movies.moviesItem.sort(CompareByName);
+  console.log(movies.moviesItem);
   console.log("------------------------------");
-  movies.sort((firstItem, secondItem) => secondItem.rating - firstItem.rating);
-  console.log(movies);
+  movies.moviesItem.sort(
+    (firstItem, secondItem) => secondItem.rating - firstItem.rating
+  );
+  console.log(movies.moviesItem);
   res.status(200);
-  res.send(movies);
+  res.send(movies.moviesItem);
 
   // OR send the list with String format
   // res.send(
-  //   movies.map( (e) =>
+  //   movies.moviesItem.map( (e) =>
   //    `${e.title}
   //     ${e.year}
   //     ${e.rating}
@@ -157,16 +185,16 @@ app.get("/movies/read/by-rating", function (req, res, next) {
 });
 
 app.get("/movies/read/by-title", function (req, res, next) {
-  console.log(movies);
+  console.log(movies.moviesItem);
   console.log("------------------------------");
-  movies.sort(CompareByName);
-  console.log(movies);
+  movies.moviesItem.sort(CompareByName);
+  console.log(movies.moviesItem);
   res.status(200);
-  res.send(movies);
+  res.send(movies.moviesItem);
 
   // OR send the list with String format
   // res.send(
-  //   movies.map( (e) =>
+  //   movies.moviesItem.map( (e) =>
   //    `${e.title}
   //     ${e.year}
   //     ${e.rating}
@@ -188,12 +216,14 @@ function CompareByName(a, b) {
 
 // Step 7
 app.get("/movies/read/id/:id", function (req, res, next) {
-  if (+req.params.id < movies.length) {
-    console.log(movies);
-    res.status(200).send({ status: 200, data: movies[+req.params.id] });
+  if (+req.params.id < movies.moviesItem.length) {
+    console.log(movies.moviesItem);
+    res
+      .status(200)
+      .send({ status: 200, data: movies.moviesItem[+req.params.id] });
 
     // OR this message
-    //res.status(200).send(movies[+(req.params.id)]);
+    //res.status(200).send(movies.moviesItem[+(req.params.id)]);
     next();
   } else {
     res.status(404).send({
@@ -203,11 +233,11 @@ app.get("/movies/read/id/:id", function (req, res, next) {
         "The movie '" +
         req.params.id +
         "' does not exist, the final ID is " +
-        (movies.length - 1),
+        (movies.moviesItem.length - 1),
     });
 
     // OR this message
-    //res.status(404).send("The movie \'"+req.params.id+"\' does not exist, the final ID is " + (movies.length-1));
+    //res.status(404).send("The movie \'"+req.params.id+"\' does not exist, the final ID is " + (movies.moviesItem.length-1));
     next();
   }
 });
@@ -227,20 +257,24 @@ app.post("/movies/add", function (req, res, next) {
     +newYear != NaN &&
     newYear.length == 4
   ) {
-    console.log(movies);
+    console.log(movies.moviesItem);
     console.log("-------------------------------");
     if (isMissing(newRating) == true) {
       newYear = +newYear; // change year to integer
-      movies.push({ title: newTitle, year: newYear, rating: 4 });
-      console.log(movies);
-      res.status(200).send({ status: 200, data: movies });
+      movies.moviesItem.push({ title: newTitle, year: newYear, rating: 4 });
+      console.log(movies.moviesItem);
+      res.status(200).send({ status: 200, data: movies.moviesItem });
       next();
     } else {
       newYear = +newYear; // change year to integer
       newRating = +newRating; // change rating to integer
-      movies.push({ title: newTitle, year: newYear, rating: newRating });
-      console.log(movies);
-      res.status(200).send({ status: 200, data: movies });
+      movies.moviesItem.push({
+        title: newTitle,
+        year: newYear,
+        rating: newRating,
+      });
+      console.log(movies.moviesItem);
+      res.status(200).send({ status: 200, data: movies.moviesItem });
       next();
     }
   } else {
@@ -254,6 +288,9 @@ app.post("/movies/add", function (req, res, next) {
     //res.status(403).send("you cannot create a movie without providing a title and a year");
     next();
   }
+  movies.save().then((result) => {
+    console.log("saved!");
+  });
 });
 
 function isMissing(str) {
@@ -276,15 +313,15 @@ app.delete("/movies/delete/:id", function (req, res, next) {
     next();
   } else {
     let id = +req.params.id;
-    if (id < movies.length) {
+    if (id < movies.moviesItem.length) {
       console.log("ID= " + id);
-      movies.splice(id, 1);
-      res.status(200).send({ status: 200, data: movies });
+      movies.moviesItem.splice(id, 1);
+      res.status(200).send({ status: 200, data: movies.moviesItem });
 
       // OR this message
-      //res.status(200).send(movies);
+      //res.status(200).send(movies.moviesItem);
       next();
-    } else if (id == 0 && movies.length == 0) {
+    } else if (id == 0 && movies.moviesItem.length == 0) {
       res.status(404).send({
         status: 404,
         error: true,
@@ -306,6 +343,9 @@ app.delete("/movies/delete/:id", function (req, res, next) {
       next();
     }
   }
+  movies.save().then((result) => {
+    console.log("saved!");
+  });
 });
 
 //Step 10
@@ -332,27 +372,27 @@ app.put("/movies/update/:id", function (req, res, next) {
     newYear.length == 4 &&
     isMissing(newRating) == false
   ) {
-    console.log(movies);
+    console.log(movies.moviesItem);
     console.log("-------------------------------");
 
     newYear = +newYear; // change year to integer
     newRating = +newRating; // change rating to integer
-    movies[id].title = newTitle;
-    movies[id].year = newYear;
-    movies[id].rating = newRating;
-    console.log(movies);
-    res.status(200).send({ status: 200, data: movies });
+    movies.moviesItem[id].title = newTitle;
+    movies.moviesItem[id].year = newYear;
+    movies.moviesItem[id].rating = newRating;
+    console.log(movies.moviesItem);
+    res.status(200).send({ status: 200, data: movies.moviesItem });
     next();
   } else if (
     isMissing(newYear) == false &&
     +newYear != NaN &&
     newYear.length == 4
   ) {
-    console.log(movies);
+    console.log(movies.moviesItem);
     console.log("-------------------------------");
-    newTitle = newTitle || movies[id].title;
+    newTitle = newTitle || movies.moviesItem[id].title;
     newYear = +newYear; // change year to integer
-    newRating = +newRating || movies[id].rating; // change rating to integer
+    newRating = +newRating || movies.moviesItem[id].rating; // change rating to integer
     console.log(
       "ID= " +
         id +
@@ -363,21 +403,21 @@ app.put("/movies/update/:id", function (req, res, next) {
         " Rating= " +
         newRating
     );
-    movies[id].title = newTitle;
-    movies[id].year = newYear;
-    movies[id].rating = newRating;
-    console.log(movies);
-    res.status(200).send({ status: 200, data: movies });
+    movies.moviesItem[id].title = newTitle;
+    movies.moviesItem[id].year = newYear;
+    movies.moviesItem[id].rating = newRating;
+    console.log(movies.moviesItem);
+    res.status(200).send({ status: 200, data: movies.moviesItem });
     next();
 
     // OR this message
     //res.status(403).send("you cannot create a movie without providing a title and a year");
   } else if (isMissing(newYear) == true) {
-    console.log(movies);
+    console.log(movies.moviesItem);
     console.log("-------------------------------");
-    newTitle = newTitle || movies[id].title;
-    newYear = movies[id].year; // change year to integer
-    newRating = +newRating || movies[id].rating; // change rating to integer
+    newTitle = newTitle || movies.moviesItem[id].title;
+    newYear = movies.moviesItem[id].year; // change year to integer
+    newRating = +newRating || movies.moviesItem[id].rating; // change rating to integer
     console.log(
       "ID= " +
         id +
@@ -388,16 +428,19 @@ app.put("/movies/update/:id", function (req, res, next) {
         " Rating= " +
         newRating
     );
-    movies[id].title = newTitle;
-    movies[id].year = newYear;
-    movies[id].rating = newRating;
-    console.log(movies);
-    res.status(200).send({ status: 200, data: movies });
+    movies.moviesItem[id].title = newTitle;
+    movies.moviesItem[id].year = newYear;
+    movies.moviesItem[id].rating = newRating;
+    console.log(movies.moviesItem);
+    res.status(200).send({ status: 200, data: movies.moviesItem });
     next();
   } else {
     res.status(404).send({ status: 404, message: "enter a valid year" });
     next();
   }
+  movies.save().then((result) => {
+    console.log("saved!");
+  });
 });
 
 app.listen(port, () => {
