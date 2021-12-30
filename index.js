@@ -5,8 +5,10 @@ const MongoClient = require("mongodb").MongoClient;
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
-const url = `mongodb+srv://yahya_codi:yahcodi@cluster0.skewv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+const users = [{username:"yahya_codi", password:"yahcodi"}];
 
+const url = `mongodb+srv://${users[0].username}:${users[0].password}@cluster0.skewv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+console.log(url);
 mongoose.connect(url);
 
 const movieSchema = new mongoose.Schema({
